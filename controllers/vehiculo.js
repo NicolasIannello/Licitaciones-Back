@@ -53,7 +53,8 @@ const borrarVehiculo= async(req,res=response)=>{
 
     try {
         const vehiculoDB= await Vehiculo.findById(vid);
-        const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB.matricula } },)
+        const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB.matricula } },);
+        let cantidad= imagenesDB.length;
 
         if(!vehiculoDB){
             return res.status(404).json({
@@ -63,7 +64,7 @@ const borrarVehiculo= async(req,res=response)=>{
         }
 
         let pathViejo='';
-        for (let i = 0; i < imagenesDB.length; i++) {
+        for (let i = 0; i < cantidad; i++) {
             pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
             console.log(pathViejo)
             borrarImagen(pathViejo);
@@ -75,7 +76,8 @@ const borrarVehiculo= async(req,res=response)=>{
 
         return res.json({
             ok:true,
-            msg:'vehiculo eliminado'
+            msg:'vehiculo eliminado',
+            fotos:cantidad
         });   
     } catch (error) {
         console.log(error);
