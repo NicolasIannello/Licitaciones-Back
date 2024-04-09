@@ -24,38 +24,50 @@ const subirImagen= async(req,res = response) =>{
         })
     }
 
-    const file=req.files.img;
-    const nombreCortado=file.name.split('.');
-    const extensionArchivo= nombreCortado[nombreCortado.length-1];
-
-    const extensionesValidas=['png','jpg','jpeg','gif'];
-    if(!extensionesValidas.includes(extensionArchivo)){
-        return res.status(400).json({
-            ok:false,
-            msg:'extension mala',
-        })
-    }
-
-    const nombreArchivo= uuidv4()+'.'+extensionArchivo;
-    const path= './uploads/vehiculos/'+nombreArchivo;
+    const file=[];
+    const nombreCortado=[];
+    const extensionArchivo=[];
+    const nombreArchivo=[];
+    const path=[];
     const mat=req.body.matricula;
-    const datos = { matricula: mat, img: nombreArchivo };
+    const datos=[];
+    const cantidad=req.files.img.length
 
-    file.mv(path, (err)=>{
-        if(err){
-            return res.status(500).json({
+    for (let i = 0; i < cantidad; i++) {
+        file[i]=req.files.img[i];
+        nombreCortado[i]=file[i].name.split('.');
+        extensionArchivo[i]=nombreCortado[i][nombreCortado[i].length-1];
+
+        const extensionesValidas=['png','jpg','jpeg','gif'];
+        if(!extensionesValidas.includes(extensionArchivo[i])){
+            return res.status(400).json({
                 ok:false,
-                msg:'error en carga de img',
+                msg:'extension mala (archivo: '+nombreCortado[i]+')',
             })
         }
 
-        actualizarImagen(datos)
+        nombreArchivo[i]= uuidv4()+'.'+extensionArchivo[i];
+        path[i]= './uploads/vehiculos/'+nombreArchivo[i];
+        datos[i]={ matricula: mat, img: nombreArchivo[i] };
 
-        res.json({
-            ok:true,
-            mat,
-            nombreArchivo
+        file[i].mv(path[i], (err)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    msg:'error en carga de imagen (archivo: '+nombreCortado[i]+')',
+                })
+            }
+
+            actualizarImagen(datos[i])
         })
+    };
+
+    
+    res.json({
+        ok:true,
+        mat,
+        nombreArchivo,
+        cantidad,
     })
 };
 
