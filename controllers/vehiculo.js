@@ -1,3 +1,5 @@
+const { borrarImagen } = require('../helpers/actualizar-imagen');
+const Imagen = require('../models/imagen');
 const Vehiculo=require('../models/vehiculo');
 const { response }=require('express');
 
@@ -6,7 +8,7 @@ const getVehiculo= async(req,res = response) =>{
 
     const [ vehiculos, total ]= await Promise.all([
         Vehiculo.find().skip(desde).limit(5),
-        Vehiculo.count()
+        Vehiculo.countDocuments()
     ]);
 
     res.json({
@@ -47,11 +49,11 @@ const crearVehiculo= async(req,res = response) =>{
 };
 
 const borrarVehiculo= async(req,res=response)=>{
-    //const vid=req.params.id;
     const {vid}=req.body;
 
     try {
         const vehiculoDB= await Vehiculo.findById(vid);
+        const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB.matricula } },)
 
         if(!vehiculoDB){
             return res.status(404).json({
@@ -59,6 +61,15 @@ const borrarVehiculo= async(req,res=response)=>{
                 msg:'no existe ese vehiculo'
             });
         }
+
+        let pathViejo='';
+        for (let i = 0; i < imagenesDB.length; i++) {
+            pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
+            console.log(pathViejo)
+            borrarImagen(pathViejo);
+        }
+        
+        await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },)
 
         await Vehiculo.findByIdAndDelete(vid);
 
