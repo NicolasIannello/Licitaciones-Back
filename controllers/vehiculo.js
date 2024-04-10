@@ -66,7 +66,6 @@ const borrarVehiculo= async(req,res=response)=>{
         let pathViejo='';
         for (let i = 0; i < cantidad; i++) {
             pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
-            console.log(pathViejo)
             borrarImagen(pathViejo);
         }
         
