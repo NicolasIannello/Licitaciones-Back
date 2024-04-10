@@ -7,7 +7,7 @@ const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
 
     const [ vehiculos, total ]= await Promise.all([
-        Vehiculo.find().skip(desde).limit(5),
+        Vehiculo.find().skip(desde).limit(25),
         Vehiculo.countDocuments()
     ]);
 
