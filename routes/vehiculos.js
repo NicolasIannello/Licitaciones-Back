@@ -20,4 +20,9 @@ router.delete('/', [
     validarCampos
 ],borrarVehiculo);
 
+router.post('/elim', [
+    check('vid','hubo un error al eliminar').isMongoId(),
+    validarCampos
+],borrarVehiculo);
+
 module.exports=router;
