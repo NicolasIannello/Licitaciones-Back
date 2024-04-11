@@ -3,11 +3,41 @@ const fs=require('fs');
 const { v4: uuidv4 }=require('uuid');
 const { response }=require('express');
 const { actualizarImagen } = require('../helpers/actualizar-imagen');
+const Imagen = require('../models/imagen');
 
 const getImagen= async(req,res = response) =>{
-    const img=req.params.img;
+    const matricula=req.query.matricula;
 
-    const pathImg= path.join( __dirname, '../uploads/vehiculo/'+img);
+    const imagenesDB= await Imagen.find({ 'matricula': { $eq: matricula } },);
+    let cantidad= imagenesDB.length;
+    let file= [];
+
+    if(cantidad==0){
+        const pathImg= path.join( __dirname, '../uploads/no-img.jpg');
+        file[0]=null;
+    }else{
+        for (let i = 0; i < cantidad; i++) {
+            const pathImg= path.join( __dirname, '../uploads/vehiculos/'+imagenesDB[i].img);
+            if(fs.existsSync(pathImg)){
+                file[i]=imagenesDB[i].img;
+            }else{
+                const pathImg= path.join( __dirname, '../uploads/no-img.jpg');
+                file[i]=null;
+            }  
+        }
+    }
+    res.json({
+        ok:true,
+        file,
+        cantidad,
+    })
+};
+
+const getSingleImagen= async(req,res = response) =>{
+    const img=req.query.img;
+    const imagenesDB= await Imagen.find({ 'img': { $eq: img } },);
+
+    const pathImg= path.join( __dirname, '../uploads/vehiculos/'+imagenesDB[0].img);
     if(fs.existsSync(pathImg)){
         res.sendFile(pathImg);
     }else{
@@ -71,4 +101,4 @@ const subirImagen= async(req,res = response) =>{
     })
 };
 
-module.exports={getImagen, subirImagen}
+module.exports={getImagen, subirImagen, getSingleImagen}
