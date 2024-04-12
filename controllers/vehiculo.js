@@ -5,9 +5,10 @@ const { response }=require('express');
 
 const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
+    const limit= req.query.limit || 25;
 
     const [ vehiculos, total ]= await Promise.all([
-        Vehiculo.find().skip(desde).limit(25),
+        Vehiculo.find().skip(desde).limit(limit),
         Vehiculo.countDocuments()
     ]);
 
