@@ -13,6 +13,7 @@ dbConnection();
 
 app.use('/api/vehiculos', require('./routes/vehiculos'));
 app.use('/api/imgs', require('./routes/imgs'));
+app.use('/api/ofertas', require('./routes/ofertas'));
 
 app.listen( process.env.PORT, () =>{
     console.log('Iniciando');
