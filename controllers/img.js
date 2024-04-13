@@ -36,8 +36,14 @@ const getImagen= async(req,res = response) =>{
 const getSingleImagen= async(req,res = response) =>{
     const img=req.query.img;
     const imagenesDB= await Imagen.find({ 'img': { $eq: img } },);
+    let pathImg;
 
-    const pathImg= path.join( __dirname, '../uploads/vehiculos/'+imagenesDB[0].img);
+    if(imagenesDB.length>0){
+        pathImg=pathImg= path.join( __dirname, '../uploads/vehiculos/'+imagenesDB[0].img);
+    }else{
+        pathImg=pathImg= path.join( __dirname, '../uploads/vehiculos/'+imagenesDB.img);
+    }
+
     if(fs.existsSync(pathImg)){
         res.sendFile(pathImg);
     }else{
