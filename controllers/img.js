@@ -71,7 +71,6 @@ const subirImagen= async(req,res = response) =>{
 
     for (let i = 0; i < cantidad; i++) {
         file[i]=req.files.img[i] ? req.files.img[i] : req.files.img;
-        console.log(file[i]);
         nombreCortado[i]=file[i].name.split('.');
         extensionArchivo[i]=nombreCortado[i][nombreCortado[i].length-1];
 
