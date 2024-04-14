@@ -11,7 +11,8 @@ router.post('/', [
     check('matricula','el campo es obligatorio').not().isEmpty(),
     check('matricula').isLicensePlate('any'),
     check('descripcion','el campo es obligatorio').not().isEmpty(),
-    check('fecha').isDate(),
+    check('date').isDate(),
+    check('fecha','el campo es obligatorio').not().isEmpty(),
     validarCampos
 ],crearVehiculo);
 
