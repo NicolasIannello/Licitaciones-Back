@@ -1,6 +1,7 @@
 const { borrarImagen } = require('../helpers/actualizar-imagen');
 const Imagen = require('../models/imagen');
 const Vehiculo=require('../models/vehiculo');
+const Oferta=require('../models/oferta');
 const { response }=require('express');
 
 const getVehiculo= async(req,res = response) =>{
@@ -55,7 +56,9 @@ const borrarVehiculo= async(req,res=response)=>{
     try {
         const vehiculoDB= await Vehiculo.findById(vid);
         const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB.matricula } },);
+        const ofertasDB= await Oferta.find({ 'matricula': { $eq: vehiculoDB.matricula } },);
         let cantidad= imagenesDB.length;
+        let cantidadOferta= ofertasDB.length;
 
         if(!vehiculoDB){
             return res.status(404).json({
@@ -71,13 +74,15 @@ const borrarVehiculo= async(req,res=response)=>{
         }
         
         await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },)
+        await Oferta.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },)
 
         await Vehiculo.findByIdAndDelete(vid);
 
         return res.json({
             ok:true,
             msg:'vehiculo eliminado',
-            fotos:cantidad
+            fotos:cantidad,
+            ofertas:cantidadOferta,
         });   
     } catch (error) {
         console.log(error);
