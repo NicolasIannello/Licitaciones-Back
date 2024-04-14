@@ -67,67 +67,37 @@ const subirImagen= async(req,res = response) =>{
     const path=[];
     const mat=req.body.matricula;
     const datos=[];
-    let cantidad=req.files.img.length;
+    let cantidad=req.files.img.length || 1;
 
-    if(cantidad!=undefined){
-        for (let i = 0; i < cantidad; i++) {
-            file[i]=req.files.img[i];
-            nombreCortado[i]=file[i].name.split('.');
-            extensionArchivo[i]=nombreCortado[i][nombreCortado[i].length-1];
-    
-            const extensionesValidas=['png','jpg','jpeg','gif'];
-            if(!extensionesValidas.includes(extensionArchivo[i])){
-                return res.status(400).json({
-                    ok:false,
-                    msg:'extension mala (archivo: '+nombreCortado[i]+')',
-                })
-            }
-    
-            nombreArchivo[i]= uuidv4()+'.'+extensionArchivo[i];
-            path[i]= './uploads/vehiculos/'+nombreArchivo[i];
-            datos[i]={ matricula: mat, img: nombreArchivo[i] };
-    
-            file[i].mv(path[i], (err)=>{
-                if(err){
-                    return res.status(500).json({
-                        ok:false,
-                        msg:'error en carga de imagen (archivo: '+nombreCortado[i]+')',
-                    })
-                }
-    
-                actualizarImagen(datos[i])
-            })
-        };
-    }else{
-        file[0]=req.files.img;
-        nombreCortado[0]=file[0].name.split('.');
-        extensionArchivo[0]=nombreCortado[0][nombreCortado[0].length-1];
+    for (let i = 0; i < cantidad; i++) {
+        file[i]=req.files.img[i] ? req.files.img[i] : req.files.img;
+        console.log(file[i]);
+        nombreCortado[i]=file[i].name.split('.');
+        extensionArchivo[i]=nombreCortado[i][nombreCortado[i].length-1];
 
-        const extensionesValidas=['png','jpg','jpeg','gif'];
-        if(!extensionesValidas.includes(extensionArchivo[0])){
+        const extensionesValidas=['png','jpg','jpeg','gif','pdf'];
+        if(!extensionesValidas.includes(extensionArchivo[i])){
             return res.status(400).json({
                 ok:false,
-                msg:'extension mala (archivo: '+nombreCortado[0]+')',
+                msg:'extension mala (archivo: '+nombreCortado[i]+')',
             })
         }
 
-        nombreArchivo[0]= uuidv4()+'.'+extensionArchivo[0];
-        path[0]= './uploads/vehiculos/'+nombreArchivo[0];
-        datos[0]={ matricula: mat, img: nombreArchivo[0] };
+        nombreArchivo[i]= uuidv4()+'.'+extensionArchivo[i];
+        path[i]= './uploads/vehiculos/'+nombreArchivo[i];
+        datos[i]={ matricula: mat, img: nombreArchivo[i] };
 
-        file[0].mv(path[0], (err)=>{
+        file[i].mv(path[i], (err)=>{
             if(err){
                 return res.status(500).json({
                     ok:false,
-                    msg:'error en carga de imagen (archivo: '+nombreCortado[0]+')',
+                    msg:'error en carga de imagen (archivo: '+nombreCortado[i]+')',
                 })
             }
 
-            actualizarImagen(datos[0])
+            actualizarImagen(datos[i])
         })
-        cantidad=1;
-    }
-    
+    };
     
     res.json({
         ok:true,
