@@ -3,16 +3,16 @@ const Vehiculo=require('../models/vehiculo');
 const Oferta=require('../models/oferta');
 
 const getOfertas= async(req,res = response) =>{
-    // const matricula=req.query.matricula;
+    const matricula=req.query.matricula;
 
-    // const imagenesDB= await Imagen.find({ 'matricula': { $eq: matricula } },);
-    // let cantidad= imagenesDB.length;
+    const ofertasDB= await Oferta.find({ 'matricula': { $eq: matricula } },).sort({ oferta: -1 });
+    let cantidad= ofertasDB.length;
     
-    // res.json({
-    //     ok:true,
-    //     file,
-    //     cantidad,
-    // })
+    res.json({
+        ok:true,
+        ofertasDB,
+        cantidad,
+    })
 };
 
 const crearOferta= async(req,res = response) =>{
