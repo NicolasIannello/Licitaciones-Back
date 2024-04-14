@@ -3,7 +3,7 @@ const { Schema, model } = require('mongoose');
 const OfertaSchema = Schema({
     // matricula: { type: Schema.Types.ObjectId, require:true ,ref: 'Vehiculo' },
     matricula: { type: String, require:true},
-    oferta: { type: Number, required:true },
+    oferta: { type: String, required:true },
     contacto: { type: String, require:true },
 });
 
