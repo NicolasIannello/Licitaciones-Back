@@ -93,4 +93,13 @@ const borrarVehiculo= async(req,res=response)=>{
     }
 };
 
-module.exports={getVehiculo,crearVehiculo,borrarVehiculo}
+const getPDF= async(req,res = response)=>{
+    const vehiculos= await Oferta.find().skip(0).sort({ oferta: -1 });
+
+    res.json({
+        ok:true,
+        vehiculos
+    });
+};
+
+module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF}

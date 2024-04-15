@@ -1,6 +1,6 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
-const { getVehiculo, crearVehiculo, borrarVehiculo } = require('../controllers/vehiculo');
+const { getVehiculo, crearVehiculo, borrarVehiculo, getPDF } = require('../controllers/vehiculo');
 const { validarCampos } = require('../middlewares/validar-campos');
 
 const router=Router();
@@ -25,5 +25,7 @@ router.post('/elim', [
     check('vid','hubo un error al eliminar').isMongoId(),
     validarCampos
 ],borrarVehiculo);
+
+router.get('/pdf',getPDF);
 
 module.exports=router;
