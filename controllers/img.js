@@ -86,7 +86,7 @@ const subirImagen= async(req,res = response) =>{
         path[i]= './uploads/vehiculos/'+nombreArchivo[i];
         datos[i]={ matricula: mat, img: nombreArchivo[i] };
 
-        await file[i].mv(path[i], (err)=>{
+        file[i].mv(path[i], (err)=>{
             if(err){
                 console.log(err);
                 return res.status(500).json({
