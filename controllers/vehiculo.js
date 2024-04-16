@@ -102,4 +102,58 @@ const getPDF= async(req,res = response)=>{
     });
 };
 
-module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF}
+const borrarVehiculoDate= async(req,res=response)=>{
+    const {date}=req.body;
+
+    try {
+        const vehiculoDB= await Vehiculo.find({ 'date': { $lt: date } },);        
+        let cantidadV= vehiculoDB.length;
+        let cantidadI=0;
+        let cantidadO=0;
+
+        if(!vehiculoDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'no existe ese vehiculo'
+            });
+        }
+
+        for (let i = 0; i <= cantidadV; i++) {
+            if(i==cantidadV){
+                return res.json({
+                    ok:true,
+                    msg:'vehiculo eliminado',
+                    vehiculo: cantidadV,
+                    fotos:cantidadI,
+                    ofertas:cantidadO,
+                });   
+            }
+            const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB[i].matricula } },);
+            const ofertasDB= await Oferta.find({ 'matricula': { $eq: vehiculoDB[i].matricula } },);    
+            cantidadI+=imagenesDB.length; cantidadO+=ofertasDB.length;
+
+            let pathViejo='';
+            for (let i = 0; i < imagenesDB.length; i++) {
+                pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
+                borrarImagen(pathViejo);
+            }
+            
+            await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
+            await Oferta.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
+            await Vehiculo.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } });    
+        }
+
+        return res.json({
+            ok:true,
+            msg:'error inesperado',
+        });   
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+};
+
+module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF,borrarVehiculoDate}
