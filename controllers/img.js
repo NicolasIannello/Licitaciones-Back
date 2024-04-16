@@ -86,8 +86,9 @@ const subirImagen= async(req,res = response) =>{
         path[i]= './uploads/vehiculos/'+nombreArchivo[i];
         datos[i]={ matricula: mat, img: nombreArchivo[i] };
 
-        file[i].mv(path[i], (err)=>{
+        await file[i].mv(path[i], (err)=>{
             if(err){
+                console.log(err);
                 return res.status(500).json({
                     ok:false,
                     msg:'error en carga de imagen (archivo: '+nombreCortado[i]+')',
