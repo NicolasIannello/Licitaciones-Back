@@ -26,7 +26,7 @@ router.post('/elim', [
     validarCampos
 ],borrarVehiculo);
 
-router.delete('/date', [
+router.post('/date', [
     check('date').isDate(),
     validarCampos
 ],borrarVehiculoDate);
