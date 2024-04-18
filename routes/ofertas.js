@@ -12,7 +12,6 @@ router.get('/',[
 router.post('/', [
     check('oferta','el campo es obligatorio').not().isEmpty(),
     check('matricula').isLicensePlate('any'),
-    check('contacto','el campo es obligatorio').not().isEmpty(),
     validarCampos
 ],crearOferta);
 
