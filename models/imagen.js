@@ -4,11 +4,11 @@ const ImagenSchema = Schema({
     //matricula: { type: Schema.Types.ObjectId, require:true ,ref: 'Vehiculo' },
     matricula: { type: String, require:true},
     img: { type: String, require:true, unique:true }
-});
+}, { collection: 'imagenes'});
 
 ImagenSchema.method('toJSON', function() {
     const { __v, _id, ...object } = this.toObject();
     return object;
-}, { collection: 'imagenes'});
+});
 
 module.exports= model('Imagen',ImagenSchema);
