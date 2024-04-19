@@ -1,7 +1,7 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
 const { validarCampos } = require('../middlewares/validar-campos');
-const { getOfertas, crearOferta } = require('../controllers/oferta');
+const { getOfertas, crearOferta, marcarOferta } = require('../controllers/oferta');
 
 const router=Router();
 
@@ -14,5 +14,12 @@ router.post('/', [
     check('matricula').isLicensePlate('any'),
     validarCampos
 ],crearOferta);
+
+router.post('/vista', [
+    check('user','el campo es obligatorio').not().isEmpty(),
+    check('matricula').isLicensePlate('any'),
+    check('tipo','el campo es obligatorio').not().isEmpty(),
+    validarCampos
+],marcarOferta);
 
 module.exports=router;
