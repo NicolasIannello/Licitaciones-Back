@@ -1,11 +1,11 @@
 const { Schema, model } = require('mongoose');
 
 const OfertaSchema = Schema({
-    // matricula: { type: Schema.Types.ObjectId, require:true ,ref: 'Vehiculo' },
     matricula: { type: String, require:true},
     oferta: { type: String, required:true },
     nomapel: { type: String, require:true },
     tel: { type: String, require:true },
+    user: { type: String, require:true },
 });
 
 OfertaSchema.method('toJSON', function() {
