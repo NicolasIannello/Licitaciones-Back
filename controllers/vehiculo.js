@@ -3,15 +3,41 @@ const Imagen = require('../models/imagen');
 const Vehiculo=require('../models/vehiculo');
 const Oferta=require('../models/oferta');
 const { response }=require('express');
+const Vista = require('../models/vista');
 
 const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
     const limit= req.query.limit || 25;
+    const user= req.query.user;
 
     const [ vehiculos, total ]= await Promise.all([
         Vehiculo.find().skip(desde).limit(limit).sort({ date: -1 }),
         Vehiculo.countDocuments()
     ]);
+
+    if(user!="null"){
+        for (let i = 0; i < vehiculos.length; i++) {
+            let tipo=0;
+
+            const existeOferta= await Oferta.findOne({ $and: [ { 'matricula': { $eq: vehiculos[i].matricula } }, { 'user': { $eq: user } } ] });
+            if(existeOferta){
+                tipo=2;
+            }else{
+                const existeVista= await Vista.findOne({ $and: [ { 'matricula': { $eq: vehiculos[i].matricula } }, { 'user': { $eq: user } } ] });
+                if(existeVista) tipo=1;
+            }
+
+            vehiculos[i]={
+                _id:vehiculos[i]._id,
+                matricula:vehiculos[i].matricula,
+                descripcion:vehiculos[i].descripcion,
+                date:vehiculos[i].date,
+                fecha:vehiculos[i].fecha,
+                __v:vehiculos[i].__v,
+                tipo: tipo 
+            };
+        }
+    }
 
     res.json({
         ok:true,
