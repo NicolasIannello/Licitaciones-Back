@@ -18,7 +18,6 @@ router.post('/', [
 router.post('/vista', [
     check('user','el campo es obligatorio').not().isEmpty(),
     check('matricula').isLicensePlate('any'),
-    check('tipo','el campo es obligatorio').not().isEmpty(),
     validarCampos
 ],marcarOferta);
 
