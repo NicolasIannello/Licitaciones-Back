@@ -2,8 +2,8 @@ const { borrarImagen } = require('../helpers/actualizar-imagen');
 const Imagen = require('../models/imagen');
 const Vehiculo=require('../models/vehiculo');
 const Oferta=require('../models/oferta');
-const { response }=require('express');
 const Vista = require('../models/vista');
+const { response }=require('express');
 
 const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
@@ -156,7 +156,7 @@ const borrarVehiculoDate= async(req,res=response)=>{
                 });   
             }
             const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB[i].matricula } },);
-            const ofertasDB= await Oferta.find({ 'matricula': { $eq: vehiculoDB[i].matricula } },);    
+            const ofertasDB= await Oferta.find({ 'matricula': { $eq: vehiculoDB[i].matricula } },);       
             cantidadI+=imagenesDB.length; cantidadO+=ofertasDB.length;
 
             let pathViejo='';
@@ -167,8 +167,9 @@ const borrarVehiculoDate= async(req,res=response)=>{
             
             await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
             await Oferta.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
-            await Vehiculo.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } });
-            await Vista.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },);
+            await Vista.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },);
+
+            await Vehiculo.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
         }
 
         return res.json({
