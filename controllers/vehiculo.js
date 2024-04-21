@@ -83,7 +83,6 @@ const borrarVehiculo= async(req,res=response)=>{
         const vehiculoDB= await Vehiculo.findById(vid);
         const imagenesDB= await Imagen.find({ 'matricula': { $eq: vehiculoDB.matricula } },);
         const ofertasDB= await Oferta.find({ 'matricula': { $eq: vehiculoDB.matricula } },);
-        const vistaDB= await Vista.find({ 'matricula': { $eq: vehiculoDB.matricula } },);
         let cantidad= imagenesDB.length;
         let cantidadOferta= ofertasDB.length;
 
@@ -168,7 +167,8 @@ const borrarVehiculoDate= async(req,res=response)=>{
             
             await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
             await Oferta.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
-            await Vehiculo.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } });    
+            await Vehiculo.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } });
+            await Vista.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },);
         }
 
         return res.json({
