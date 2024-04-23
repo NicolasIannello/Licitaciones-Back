@@ -192,7 +192,10 @@ const borrarVehiculoDate= async(req,res=response)=>{
 const notificar= async(req,res=response)=>{
     const {cantidad}=req.body;
 
+    const users = await Usuario.find();
     const transporter = nodemailer.createTransport({
+        maxConnections: 1,
+        pool: true,
         service: 'outlook',
         auth: {
             user: process.env.MAIL,
@@ -200,10 +203,8 @@ const notificar= async(req,res=response)=>{
         }
     });
 
-    const users = await Usuario.find();
-
-    users.forEach(user => {
-        transporter.sendMail({
+    users.forEach(async user=>{
+        await transporter.sendMail({
             from: '"Licitaciones" <'+process.env.MAIL+'>',
             to: user.mail,
             subject: "Nuevos vehiculos",
