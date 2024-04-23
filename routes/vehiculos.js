@@ -1,6 +1,6 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
-const { getVehiculo, crearVehiculo, borrarVehiculo, getPDF, borrarVehiculoDate } = require('../controllers/vehiculo');
+const { getVehiculo, crearVehiculo, borrarVehiculo, getPDF, borrarVehiculoDate, notificar } = require('../controllers/vehiculo');
 const { validarCampos } = require('../middlewares/validar-campos');
 
 const router=Router();
@@ -32,5 +32,10 @@ router.post('/date', [
 ],borrarVehiculoDate);
 
 router.get('/pdf',getPDF);
+
+router.post('/mail',[
+    check('cantidad').not().isEmpty(),
+    validarCampos
+],notificar);
 
 module.exports=router;

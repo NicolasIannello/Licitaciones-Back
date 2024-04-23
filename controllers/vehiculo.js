@@ -4,6 +4,8 @@ const Vehiculo=require('../models/vehiculo');
 const Oferta=require('../models/oferta');
 const Vista = require('../models/vista');
 const { response }=require('express');
+const nodemailer = require("nodemailer");
+const Usuario = require('../models/usuario');
 
 const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
@@ -183,6 +185,41 @@ const borrarVehiculoDate= async(req,res=response)=>{
             msg:'error'
         });
     }
+
+
 };
 
-module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF,borrarVehiculoDate}
+const notificar= async(req,res=response)=>{
+    const {cantidad}=req.body;
+
+    const transporter = nodemailer.createTransport({
+        service: 'outlook',
+        auth: {
+            user: process.env.MAIL,
+            pass: process.env.MPASS
+        }
+    });
+
+    const users = await Usuario.find();
+
+    users.forEach(user => {
+        transporter.sendMail({
+            from: '"Licitaciones" <'+process.env.MAIL+'>',
+            to: user.mail,
+            subject: "Nuevos vehiculos",
+            text: "Se cargaron "+cantidad+" nuevos vehiculos",
+            html: "<b>Se cargaron "+cantidad+" nuevos vehiculos</b>",
+        }, function(error, info){
+            if (error) {
+                console.log(error);
+            }
+        });
+    });
+
+    return res.json({
+        ok:true,
+        msg:'Email sent',
+    });  
+};
+
+module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF,borrarVehiculoDate, notificar}
