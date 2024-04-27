@@ -1,10 +1,17 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
 const { validarCampos } = require('../middlewares/validar-campos');
-const { crearUsuario, login, renewToken } = require('../controllers/usuario');
+const { crearUsuario, login, renewToken, getUser, actualizarUsuario } = require('../controllers/usuario');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
 const router=Router();
+
+router.get('/', getUser);
+
+router.post('/actualizar',[
+    check('id','error').not().isEmpty(),
+    validarCampos
+], actualizarUsuario)
 
 router.post('/crear', [
     check('tel','numero no valido').isMobilePhone(),
