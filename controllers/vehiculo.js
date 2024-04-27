@@ -11,13 +11,22 @@ const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
     const limit= req.query.limit || 25;
     const user= req.query.user;
+    const grupo=req.query.grupo
+    let vehiculos=null,total=null;
 
-    const [ vehiculos, total ]= await Promise.all([
-        Vehiculo.find().skip(desde).limit(limit).sort({ date: -1 }),
-        Vehiculo.countDocuments()
-    ]);
+    if(grupo!=undefined && grupo!="general"){
+        [ vehiculos, total ]= await Promise.all([
+            Vehiculo.find({ 'grupo': { $eq: grupo } },).skip(desde).limit(limit).sort({ date: -1 }),
+            Vehiculo.countDocuments()
+        ]);
+    }else{
+        [ vehiculos, total ]= await Promise.all([
+            Vehiculo.find().skip(desde).limit(limit).sort({ date: -1 }),
+            Vehiculo.countDocuments()
+        ]);
+    }
 
-    if(user!="null"){
+    if(user!="null" && user!=undefined){
         for (let i = 0; i < vehiculos.length; i++) {
             let tipo=0;
 
@@ -35,6 +44,7 @@ const getVehiculo= async(req,res = response) =>{
                 descripcion:vehiculos[i].descripcion,
                 date:vehiculos[i].date,
                 fecha:vehiculos[i].fecha,
+                grupo:vehiculos[i].grupo,
                 __v:vehiculos[i].__v,
                 tipo: tipo 
             };
@@ -209,7 +219,7 @@ const notificar= async(req,res=response)=>{
             to: user.mail,
             subject: "Nuevos vehiculos",
             text: "Se cargaron "+cantidad+" nuevos vehiculos",
-            html: "<b>Se cargaron "+cantidad+" nuevos vehiculos</b>",
+            html: "<b>Se cargaron "+cantidad+" nuevos vehiculos</b><br>Puede verlos siguiendo el link: "+process.env.LINK,
         }, function(error, info){
             if (error) {
                 console.log(error);
