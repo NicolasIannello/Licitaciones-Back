@@ -5,7 +5,8 @@ const UsuarioSchema = Schema({
     mail: { type: String, required: true },
     tel: { type: String, required: true },
     nomapel: { type: String, required: true },
-    pass: { type: String, required: true }
+    pass: { type: String, required: true },
+    grupo: { type: String}
 });
 
 UsuarioSchema.method('toJSON', function() {

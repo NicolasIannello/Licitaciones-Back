@@ -4,7 +4,8 @@ const VehiculoSchema = Schema({
     matricula: { type: String, required: true, unique:true },
     descripcion: { type: String, required: true },
     date: { type: Date, required: true },
-    fecha: { type: String, required: true }
+    fecha: { type: String, required: true },
+    grupo: { type: String }
 });
 
 VehiculoSchema.method('toJSON', function() {
