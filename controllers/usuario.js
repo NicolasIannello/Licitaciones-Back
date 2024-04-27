@@ -3,6 +3,53 @@ const { generarJWT } = require('../helpers/jwt');
 const Usuario = require('../models/usuario');
 const bcrypt=require('bcryptjs');
 
+const getUser= async(req,res=response) =>{
+    const desde= req.query.desde || 0;
+    const limit= req.query.limit || 25;
+
+    const [ users, total ]= await Promise.all([
+        Usuario.find().skip(desde).limit(limit),
+        Usuario.countDocuments()
+    ]);
+
+    res.json({
+        ok:true,
+        users,
+        total
+    });
+}
+
+const actualizarUsuario= async(req,res=response)=>{
+    const {id}=req.body;
+    
+    try {
+        const usuarioDB= await Usuario.findById(id);
+
+        if(!usuarioDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'no existe ese usuario id'
+            });
+        }
+
+        const {grupo, ...campos}=req.body;
+        
+        campos.grupo=grupo;
+
+        await Usuario.findByIdAndUpdate(id, campos,{new:true});
+
+        res.json({
+            ok:true,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+}
+
 const crearUsuario= async(req,res = response) =>{
     const {mail,pass,user}=req.body;
 
@@ -86,11 +133,17 @@ const renewToken= async(req,res=response)=>{
     const token= await generarJWT(_id);
     const usuarioDB= await Usuario.find({ user: _id })
 
-    res.json({
-        ok:true,
-        token,
-        usuarioDB
-    })
+    if(usuarioDB.length==0){
+        res.json({
+            ok:false
+        })
+    }else{
+        res.json({
+            ok:true,
+            token,
+            usuarioDB
+        })
+    }
 }
 
-module.exports={crearUsuario,login,renewToken}
+module.exports={crearUsuario,login,renewToken, getUser, actualizarUsuario}
