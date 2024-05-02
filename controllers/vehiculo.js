@@ -218,8 +218,8 @@ const notificar= async(req,res=response)=>{
             from: '"Licitaciones" <'+process.env.MAIL+'>',
             to: user.mail,
             subject: "Nuevos vehiculos",
-            text: "Se cargaron "+cantidad+" nuevos vehiculos",
-            html: "<b>Se cargaron "+cantidad+" nuevos vehiculos</b><br>Puede verlos siguiendo el link: "+process.env.LINK,
+            text: "Se cargaron nuevos vehiculos",//"Se cargaron "+cantidad+" nuevos vehiculos",
+            html: "<b>Se cargaron nuevos vehiculos</b><br>Puede verlos siguiendo el link: "+process.env.LINK,//"<b>Se cargaron "+cantidad+" nuevos vehiculos</b><br>Puede verlos siguiendo el link: "+process.env.LINK,
         }, function(error, info){
             if (error) {
                 console.log(error);
