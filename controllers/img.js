@@ -67,7 +67,7 @@ const subirImagen= async(req,res = response) =>{
     // const path=[];
     const mat=req.body.matricula;
     const datos=[];
-    let cantidad=req.body.img.length || 1;//req.files.img.length || 1;
+    let cantidad=Array.isArray(req.body.img) ? req.body.img.length : 1;//req.body.img.length || 1;//req.files.img.length || 1;
 
     // for (let i = 0; i < cantidad; i++) {
     //     file[i]=req.files.img[i] ? req.files.img[i] : req.files.img;
@@ -98,10 +98,14 @@ const subirImagen= async(req,res = response) =>{
     //         actualizarImagen(datos[i])
     //     })
     // };
-
-    for (let i = 0; i < cantidad; i++) {
-        datos[i]={ matricula: mat, img: req.body.img[i] };
-        actualizarImagen(datos[i])
+    if(cantidad==1){
+        datos[0]={ matricula: mat, img: req.body.img };
+        actualizarImagen(datos[0])
+    }else{
+        for (let i = 0; i < cantidad; i++) {
+            datos[i]={ matricula: mat, img: req.body.img[i] };
+            actualizarImagen(datos[i])
+        }
     }
     
     res.json({
