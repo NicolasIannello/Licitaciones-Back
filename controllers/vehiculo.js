@@ -6,6 +6,8 @@ const Vista = require('../models/vista');
 const { response }=require('express');
 const nodemailer = require("nodemailer");
 const Usuario = require('../models/usuario');
+const PDFdate = require('../models/pdfdate');
+const PDF = require('../models/pdf');
 
 const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
@@ -50,6 +52,20 @@ const getVehiculo= async(req,res = response) =>{
                 tipo: tipo 
             };
         }
+    }
+
+    const existeFecha= await PDFdate.findOne();
+    if(existeFecha){
+        let mes = parseInt(existeFecha.month);
+        if(mes>=mes+3) {
+            await PDF.deleteMany({});
+            await PDFdate.deleteMany({});
+            const pdfDate = new PDFdate({ month: new Date().getMonth()+1});
+            await pdfDate.save();
+        }
+    }else{
+        const pdfDate = new PDFdate({ month: new Date().getMonth()+1});
+        await pdfDate.save();
     }
 
     res.json({
@@ -134,7 +150,27 @@ const borrarVehiculo= async(req,res=response)=>{
 };
 
 const getPDF= async(req,res = response)=>{
-    const vehiculos= await Oferta.find().skip(0).sort({ oferta: -1 });
+    //const vehiculos= await Oferta.find().skip(0).sort({ oferta: -1 });
+    const vehiculosDB= await PDF.find().skip(0).sort({ matricula: -1 });
+    let vehiculos=[], j=0, ofertas=[];
+
+    for (let i = 0; i < vehiculosDB.length; i++) {
+        if(vehiculos[j]==undefined) vehiculos.push({ matricula:vehiculosDB[i].matricula, ofertas:undefined })
+        
+        if(vehiculos[j].matricula==vehiculosDB[i].matricula){
+            ofertas.push({ user:vehiculosDB[i].user, oferta:vehiculosDB[i].oferta })
+        }else{
+            vehiculos[j].ofertas=ofertas;
+            ofertas=[];
+            ofertas.push({ user:vehiculosDB[i].user, oferta:vehiculosDB[i].oferta })
+        }
+
+        if(vehiculos[j]!=undefined && vehiculos[j].matricula!=vehiculosDB[i].matricula) {
+            vehiculos.push({ matricula:vehiculosDB[i].matricula, ofertas:undefined })
+            j++;
+        }
+        if(i==vehiculosDB.length-1) vehiculos[j].ofertas=ofertas;
+    }
 
     res.json({
         ok:true,
