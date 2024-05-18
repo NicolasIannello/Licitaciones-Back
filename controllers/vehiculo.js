@@ -55,23 +55,30 @@ const getVehiculo= async(req,res = response) =>{
     }
 
     const existeFecha= await PDFdate.findOne();
+    let mes = new Date().getMonth()+1;
     if(existeFecha){
-        let mes = parseInt(existeFecha.month);
-        if(mes>=mes+3) {
+        let existeMes = parseInt(existeFecha.month);
+        if((mes>=existeMes+3) || (existeMes+3>12 && mes<10 && mes>=existeMes+3-12)) {
             await PDF.deleteMany({});
             await PDFdate.deleteMany({});
-            const pdfDate = new PDFdate({ month: new Date().getMonth()+1});
+            const pdfDate = new PDFdate({ month: mes});
             await pdfDate.save();
-        }
+        }// }else if(existeMes+3>12 && mes<10 && mes>=existeMes+3-12){
+        //     await PDF.deleteMany({});
+        //     await PDFdate.deleteMany({});
+        //     const pdfDate = new PDFdate({ month: mes});
+        //     await pdfDate.save();
+        // }
     }else{
-        const pdfDate = new PDFdate({ month: new Date().getMonth()+1});
+        const pdfDate = new PDFdate({ month: mes});
         await pdfDate.save();
     }
 
     res.json({
         ok:true,
         vehiculos,
-        total
+        total,
+        existeFecha
     });
 
 };
