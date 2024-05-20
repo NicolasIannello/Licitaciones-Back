@@ -6,8 +6,6 @@ const Vista = require('../models/vista');
 const { response }=require('express');
 const nodemailer = require("nodemailer");
 const Usuario = require('../models/usuario');
-const PDFdate = require('../models/pdfdate');
-const PDF = require('../models/pdf');
 
 const getVehiculo= async(req,res = response) =>{
     const desde= req.query.desde || 0;
@@ -15,6 +13,18 @@ const getVehiculo= async(req,res = response) =>{
     const user= req.query.user;
     const grupo=req.query.grupo
     let vehiculos=null,total=null;
+
+    let tresMeses = new Date();
+    tresMeses.setMonth(tresMeses.getMonth() - 3);
+    const vehiculoViejos= await Vehiculo.find({ 'date': { $lt: tresMeses } },);
+    if(vehiculoViejos){
+        for (let i = 0; i < vehiculoViejos.length; i++) {
+            await Imagen.deleteMany({ 'matricula': { $eq: vehiculoViejos[i].matricula } },)
+            await Oferta.deleteMany({ 'matricula': { $eq: vehiculoViejos[i].matricula } },)
+            await Vista.deleteMany({ 'matricula': { $eq: vehiculoViejos[i].matricula } },);
+            await Vehiculo.deleteMany({ 'matricula': { $eq: vehiculoViejos[i].matricula } },)                
+        }
+    }
 
     if(grupo!=undefined && grupo!="general"){
         [ vehiculos, total ]= await Promise.all([
@@ -54,31 +64,10 @@ const getVehiculo= async(req,res = response) =>{
         }
     }
 
-    const existeFecha= await PDFdate.findOne();
-    let mes = new Date().getMonth()+1;
-    if(existeFecha){
-        let existeMes = parseInt(existeFecha.month);
-        if((mes>=existeMes+3) || (existeMes+3>12 && mes<10 && mes>=existeMes+3-12)) {
-            await PDF.deleteMany({});
-            await PDFdate.deleteMany({});
-            const pdfDate = new PDFdate({ month: mes});
-            await pdfDate.save();
-        }// }else if(existeMes+3>12 && mes<10 && mes>=existeMes+3-12){
-        //     await PDF.deleteMany({});
-        //     await PDFdate.deleteMany({});
-        //     const pdfDate = new PDFdate({ month: mes});
-        //     await pdfDate.save();
-        // }
-    }else{
-        const pdfDate = new PDFdate({ month: mes});
-        await pdfDate.save();
-    }
-
     res.json({
         ok:true,
         vehiculos,
         total,
-        existeFecha
     });
 
 };
@@ -157,8 +146,7 @@ const borrarVehiculo= async(req,res=response)=>{
 };
 
 const getPDF= async(req,res = response)=>{
-    //const vehiculos= await Oferta.find().skip(0).sort({ oferta: -1 });
-    const vehiculosDB= await PDF.find().skip(0).sort({ matricula: -1 });
+    const vehiculosDB= await Oferta.find().skip(0).sort({ matricula: -1 });
     let vehiculos=[], j=0, ofertas=[];
 
     for (let i = 0; i < vehiculosDB.length; i++) {
@@ -176,7 +164,12 @@ const getPDF= async(req,res = response)=>{
             vehiculos.push({ matricula:vehiculosDB[i].matricula, ofertas:undefined })
             j++;
         }
-        if(i==vehiculosDB.length-1) vehiculos[j].ofertas=ofertas;
+        if(i==vehiculosDB.length-1) {
+            vehiculos[j].ofertas=ofertas;
+            vehiculos[j].ofertas.sort(function(a, b) {
+                return parseFloat(b.oferta) - parseFloat(a.oferta);
+            });
+        }
     }
 
     res.json({
