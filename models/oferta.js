@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const OfertaSchema = Schema({
     matricula: { type: String, require:true},
-    oferta: { type: String, required:true },
+    oferta: { type: Number, required:true },
     nomapel: { type: String, require:true },
     tel: { type: String, require:true },
     user: { type: String, require:true },
