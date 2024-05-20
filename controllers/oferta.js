@@ -2,7 +2,6 @@ const { response }=require('express');
 const Vehiculo=require('../models/vehiculo');
 const Oferta=require('../models/oferta');
 const Vista = require('../models/vista');
-const PDF = require('../models/pdf');
 
 const getOfertas= async(req,res = response) =>{
     const matricula=req.query.matricula;
@@ -41,9 +40,7 @@ const crearOferta= async(req,res = response) =>{
         }
 
         const oferta = new Oferta(req.body);
-        const excel = new PDF(req.body);
         await oferta.save();
-        await excel.save();
 
         res.json({
             ok:true,
