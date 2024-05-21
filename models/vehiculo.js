@@ -5,7 +5,8 @@ const VehiculoSchema = Schema({
     descripcion: { type: String, required: true },
     date: { type: Date, required: true },
     fecha: { type: String, required: true },
-    grupo: { type: String }
+    grupo: { type: String },
+    cerrado: { type: Boolean }
 });
 
 VehiculoSchema.method('toJSON', function() {
