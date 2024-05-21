@@ -58,6 +58,7 @@ const getVehiculo= async(req,res = response) =>{
                 date:vehiculos[i].date,
                 fecha:vehiculos[i].fecha,
                 grupo:vehiculos[i].grupo,
+                cerrado:vehiculos[i].cerrado,
                 __v:vehiculos[i].__v,
                 tipo: tipo 
             };
@@ -146,7 +147,7 @@ const borrarVehiculo= async(req,res=response)=>{
 };
 
 const getPDF= async(req,res = response)=>{
-    const vehiculosDB= await Oferta.find().skip(0).sort({ matricula: -1 });
+    const vehiculosDB= await Oferta.find().skip(0).sort({ matricula: -1 , oferta: -1 });
     let vehiculos=[], j=0, ofertas=[];
 
     for (let i = 0; i < vehiculosDB.length; i++) {
@@ -166,9 +167,9 @@ const getPDF= async(req,res = response)=>{
         }
         if(i==vehiculosDB.length-1) {
             vehiculos[j].ofertas=ofertas;
-            vehiculos[j].ofertas.sort(function(a, b) {
-                return parseFloat(b.oferta) - parseFloat(a.oferta);
-            });
+            // vehiculos[j].ofertas.sort(function(a, b) {
+            //     return parseFloat(b.oferta) - parseFloat(a.oferta);
+            // });
         }
     }
 
@@ -270,4 +271,35 @@ const notificar= async(req,res=response)=>{
     });  
 };
 
-module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF,borrarVehiculoDate, notificar}
+const actualizarEstado= async(req,res=response)=>{
+    const {id}=req.body;
+    
+    try {
+        const vehiculoDB= await Vehiculo.findById(id);
+
+        if(!vehiculoDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'error al cambiar estado'
+            });
+        }
+
+        const {cerrado, ...campos}=req.body;
+        
+        campos.cerrado=cerrado;
+
+        await Vehiculo.findByIdAndUpdate(id, campos,{new:true});
+
+        res.json({
+            ok:true,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+}
+
+module.exports={getVehiculo,crearVehiculo,borrarVehiculo,getPDF,borrarVehiculoDate, notificar, actualizarEstado}
