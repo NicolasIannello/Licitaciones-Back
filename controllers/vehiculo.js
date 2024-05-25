@@ -147,18 +147,61 @@ const borrarVehiculo= async(req,res=response)=>{
 };
 
 const getPDF= async(req,res = response)=>{
-    const vehiculosDB= await Oferta.find().skip(0).sort({ matricula: -1 , oferta: -1 });
+    //const vehiculosDB= await Oferta.find().skip(0).sort({ matricula: -1 , oferta: -1 });
+    const estado= (req.query.estado==="true") || false;
+    const vehiculosDB= await Vehiculo.aggregate([
+        { $match: { cerrado: estado } },
+        {
+            $project: {
+                __v: 0,
+                "__v": 0,
+                "_id": 0,
+                "descripcion": 0,
+                "date": 0,
+                "fecha": 0,
+                "grupo": 0,
+                "cerrado": 0
+            }
+        },
+        {
+            $lookup:
+            {
+                from: "ofertas",
+                localField: "matricula",
+                foreignField: "matricula",
+                as: "oferta",
+            },
+        },
+        {
+            $unwind: "$oferta"
+        },
+        {
+            $sort: {matricula: -1 ,"oferta.oferta": -1}
+        },
+        {
+            $project: {
+                __v: 0,
+                "oferta.__v": 0,
+                "oferta._id": 0,
+                "oferta.nomapel": 0,
+                "oferta.tel": 0,
+                "oferta.matricula": 0
+            }
+        }
+    ]);
     let vehiculos=[], j=0, ofertas=[];
 
     for (let i = 0; i < vehiculosDB.length; i++) {
         if(vehiculos[j]==undefined) vehiculos.push({ matricula:vehiculosDB[i].matricula, ofertas:undefined })
         
         if(vehiculos[j].matricula==vehiculosDB[i].matricula){
-            ofertas.push({ user:vehiculosDB[i].user, oferta:vehiculosDB[i].oferta })
+            //ofertas.push({ user:vehiculosDB[i].user, oferta:vehiculosDB[i].oferta })
+            ofertas.push({ user:vehiculosDB[i].oferta.user, oferta:vehiculosDB[i].oferta.oferta })
         }else{
             vehiculos[j].ofertas=ofertas;
             ofertas=[];
-            ofertas.push({ user:vehiculosDB[i].user, oferta:vehiculosDB[i].oferta })
+            //ofertas.push({ user:vehiculosDB[i].user, oferta:vehiculosDB[i].oferta })
+            ofertas.push({ user:vehiculosDB[i].oferta.user, oferta:vehiculosDB[i].oferta.oferta })
         }
 
         if(vehiculos[j]!=undefined && vehiculos[j].matricula!=vehiculosDB[i].matricula) {
