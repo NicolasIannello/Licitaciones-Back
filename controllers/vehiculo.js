@@ -28,10 +28,13 @@ const getVehiculo= async(req,res = response) =>{
 
     if(grupo!=undefined && grupo!="general"){
         [ vehiculos, total ]= await Promise.all([
-            Vehiculo.find({ $or: [ { 'grupo': { $eq: grupo } }, { 'grupo': { $eq: 'general' } } ] }).skip(desde).limit(limit).sort({ date: -1 }),
+            Vehiculo.find({ $or: [ { 'grupo': { $eq: grupo } }, { 'grupo': { $eq: 'general' } } ] }).sort({ date: -1 }),
+            //Vehiculo.find({ $or: [ { 'grupo': { $eq: grupo } }, { 'grupo': { $eq: 'general' } } ] }).skip(desde).limit(limit).sort({ date: -1 }),
             //Vehiculo.find({ 'grupo': { $eq: grupo } },).skip(desde).limit(limit).sort({ date: -1 }),
-            Vehiculo.countDocuments()
+            //Vehiculo.countDocuments()
+            Vehiculo.find({ $or: [ { 'grupo': { $eq: grupo } }, { 'grupo': { $eq: 'general' } } ] }).countDocuments(),
         ]);
+        vehiculos=vehiculos.slice(desde, parseInt(limit)+parseInt(desde))//added
     }else{
         [ vehiculos, total ]= await Promise.all([
             Vehiculo.find().skip(desde).limit(limit).sort({ date: -1 }),
