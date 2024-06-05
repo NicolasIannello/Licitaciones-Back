@@ -75,12 +75,12 @@ const crearUsuario= async(req,res = response) =>{
         usuario.pass=bcrypt.hashSync(pass,salt);
 
         await usuario.save();
-        const token= await generarJWT(usuario.uid);
+        //const token= await generarJWT(usuario.uid);
 
         res.json({
             ok:true,
             usuario,
-            token
+            //token
         });
         
     } catch (error) {
@@ -112,11 +112,10 @@ const login=async(req,res=response)=>{
             })
         }
 
-        const token= await generarJWT(usuarioDB.id);
-
+        //const token= await generarJWT(usuarioDB.id);
         res.json({
             ok:true,
-            token,
+            //token,
             user: usuarioDB.user
         })
     } catch (error) {
@@ -130,7 +129,7 @@ const login=async(req,res=response)=>{
 
 const renewToken= async(req,res=response)=>{
     const _id =req.header('_id');
-    const token= await generarJWT(_id);
+    //const token= await generarJWT(_id);
     const usuarioDB= await Usuario.find({ user: _id })
 
     if(usuarioDB.length==0){
@@ -140,7 +139,7 @@ const renewToken= async(req,res=response)=>{
     }else{
         res.json({
             ok:true,
-            token,
+            //token,
             usuarioDB
         })
     }
