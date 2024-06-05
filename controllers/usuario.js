@@ -128,7 +128,7 @@ const login=async(req,res=response)=>{
 }
 
 const renewToken= async(req,res=response)=>{
-    const _id =req.header('_id');
+    const {_id }=req.body//req.header('_id');
     //const token= await generarJWT(_id);
     const usuarioDB= await Usuario.find({ user: _id })
 
