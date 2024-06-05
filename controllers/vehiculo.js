@@ -122,11 +122,11 @@ const borrarVehiculo= async(req,res=response)=>{
             });
         }
 
-        // let pathViejo='';
-        // for (let i = 0; i < cantidad; i++) {
-        //     pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
-        //     borrarImagen(pathViejo);
-        // }
+        let pathViejo='';//
+        for (let i = 0; i < cantidad; i++) {
+            pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
+            borrarImagen(pathViejo);
+        }//
         
         await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },)
         await Oferta.deleteMany({ 'matricula': { $eq: vehiculoDB.matricula } },)
@@ -255,11 +255,11 @@ const borrarVehiculoDate= async(req,res=response)=>{
             const ofertasDB= await Oferta.find({ 'matricula': { $eq: vehiculoDB[i].matricula } },);       
             cantidadI+=imagenesDB.length; cantidadO+=ofertasDB.length;
 
-            // let pathViejo='';
-            // for (let i = 0; i < imagenesDB.length; i++) {
-            //     pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
-            //     borrarImagen(pathViejo);
-            // }
+            let pathViejo='';//
+            for (let i = 0; i < imagenesDB.length; i++) {
+                pathViejo='./uploads/vehiculos/'+imagenesDB[i].img
+                borrarImagen(pathViejo);
+            }//
             
             await Imagen.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
             await Oferta.deleteMany({ 'matricula': { $eq: vehiculoDB[i].matricula } },)
