@@ -28,6 +28,6 @@ router.post('/login', [
     validarCampos
 ],login);
 
-router.post('/renew', /*validarJWT,*/ renewToken);
+router.post('/renew', validarJWT, renewToken);
 
 module.exports=router;
