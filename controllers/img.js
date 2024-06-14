@@ -75,7 +75,7 @@ const subirImagen= async(req,res = response) =>{
         nombreCortado[i]=file[i].name.split('.');
         extensionArchivo[i]=nombreCortado[i][nombreCortado[i].length-1];
 
-        const extensionesValidas=['png','jpg','jpeg','gif','pdf'];
+        const extensionesValidas=['png','jpg','jpeg','gif','pdf','jfif'];
         if(!extensionesValidas.includes(extensionArchivo[i])){
             return res.status(400).json({
                 ok:false,
